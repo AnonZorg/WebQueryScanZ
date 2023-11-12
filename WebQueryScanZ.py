@@ -31,11 +31,9 @@ siti_web = [url_destinazione]
 async def verifica_query_string(session, sito, query_string):
     url = f"{sito}/?{query_string}"
     async with session.get(url) as response:
-        if response.status == 200:
-            risultati[sito].append(colored(f"{query_string}", "green"))
-        else:
-            risultati[sito].append(colored(f"{query_string}", "red"))
-        risultati_tabella.append({"URL": sito, "Query": query_string, "Risultato": "OK" if response.status == 200 else "KO"})
+        risultato = "OK" if response.status == 200 else "KO"
+        risultati[sito].append({"URL_completo": url, "Query": query_string, "Risultato": risultato})
+        risultati_tabella.append({"URL_completo": url, "Query": query_string, "Risultato": risultato})
 
 async def main():
     async with aiohttp.ClientSession() as session:
@@ -56,4 +54,4 @@ df_ok = df[df['Risultato'] == 'OK']
 
 # Stampare la tabella dei risultati "OK"
 print("\nTabella dei risultati (solo URL con query funzionanti):")
-print(df_ok[['URL', 'Query']])
+print(df_ok[['URL_completo', 'Query']])
